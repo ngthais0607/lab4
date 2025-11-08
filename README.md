@@ -49,7 +49,7 @@ StudentManagement/
 
 ---
 
-## 🧩 Database Configuration
+##  Database Configuration
 
 **Database name:** `student_management`  
 **Table name:** `students`
@@ -115,6 +115,12 @@ while (rs.next()) {
     // Print rows in table format
 }
 ```
+**Workflow**
+When the user opens the page, the system connects to the database using JDBC and executes a `SELECT` query to retrieve all student records.
+The data is stored in a `ResultSet` and displayed as an HTML table with columns for ID, Student Code, Full Name, Email, Major, and Created At.
+Each record is rendered dynamically inside <tr> and <td> tags.
+If the database connection fails or no data is found, the page shows a friendly error message instead of crashing.
+Finally, all resources (connection, statement, result set) are closed automatically.
 
 **Features:**
 - Uses `PreparedStatement` for secure querying.  
@@ -141,6 +147,12 @@ A dynamic HTML table showing all students, ordered by descending ID.
   <button type="submit">Add</button>
 </form>
 ```
+**Workflow**
+When the user clicks `Add Student` the system shows a form for entering a new record.
+After submission, the form sends data to `process_add.jsp` using the POST method.
+The page validates required fields like `student_code` and `full_name`, and checks that the email format is correct if provided.
+A `PreparedStatement` executes an `INSERT` query to save the new student to the database.
+If the operation succeeds, the user is redirected back to the list page with a success message; otherwise, an error is displayed.
 
 **Processing (process_add.jsp):**
 ```jsp
@@ -164,6 +176,7 @@ response.sendRedirect("list_students.jsp");
 ![alt text](image-3.png)
 ![alt text](image-4.png)
 ![alt text](image-5.png)
+
 ###  3. **edit_student.jsp + process_edit.jsp** – UPDATE Operation
 **Purpose:** Modify an existing record.
 
@@ -186,6 +199,12 @@ if (rs.next()) {
 </form>
 <% } %>
 ```
+**Workflow**
+When the user clicks `Edit` the system loads the existing student data by reading the id from the URL.
+If the ID is invalid or does not exist, the page displays an error like "Invalid ID" or “Student not found.”
+Otherwise, a prefilled form appears with the student’s information ready to update.
+When the user submits changes, `process_edit.jsp` validates the inputs and executes an UPDATE query using `PreparedStatement`.
+After successful updating, the user is redirected back to the list with a message confirming the edit.
 
 **Processing (process_edit.jsp):**
 ```jsp
@@ -210,6 +229,7 @@ response.sendRedirect("list_students.jsp");
 ![alt text](image-7.png)
 ![alt text](image-8.png)
 ![alt text](image-9.png)
+
 ###  4. **delete_student.jsp** – DELETE Operation
 **Purpose:** Delete a student record using the `id` passed via URL parameter.
 
@@ -221,6 +241,13 @@ ps.setInt(1, id);
 ps.executeUpdate();
 response.sendRedirect("list_students.jsp");
 ```
+
+**Workflow**
+When the user clicks the `Delete` button or link, a confirmation dialog appears to prevent accidental deletion.
+If confirmed, the system receives the student’s ID from the URL and validates it.
+A `PreparedStatement` executes a `DELETE` query to remove the record from the database.
+After deletion, the user is redirected back to the list page where the record no longer appears.
+If the ID is invalid or missing, the page displays an error but does not crash.
 
 **Features:**
 - URL parameter validation (checks if `id` is numeric).  
@@ -246,7 +273,7 @@ response.sendRedirect("list_students.jsp");
 
 ---
 
-## 🚀 How to Run
+##  How to Run
 
 1. Start MySQL and ensure `student_management` DB exists.  
 2. Update `JDBC_USER` and `JDBC_PASS` in JSP files if necessary.  
