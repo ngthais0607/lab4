@@ -132,7 +132,7 @@
         ResultSet rs = null;
         ResultSet rsCount = null;
 
-        // Các biến phân trang
+      
         int currentPage = 1;
         int recordsPerPage = 10; // mỗi trang 10 dòng
         int totalRecords = 0;
@@ -162,7 +162,7 @@
 
             int offset = (currentPage - 1) * recordsPerPage;
 
-            // Tính tổng số record (phục vụ phân trang)
+           
             if (keywordTrimmed != null && !keywordTrimmed.isEmpty()) {
                 String like = "%" + keywordTrimmed + "%";
 
@@ -203,7 +203,7 @@
                 rs = pstmt.executeQuery();
             }
 
-            // Tính tổng số trang
+           
             if (totalRecords > 0) {
                 totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
             } else {
@@ -238,10 +238,10 @@
     </tbody>
 </table>
 
-<!-- Pagination (Exercise 7) -->
+
 <div class="pagination">
     <%
-        // Giữ lại keyword khi chuyển trang
+        
         String keywordParam = "";
         if (keywordTrimmed != null && !keywordTrimmed.isEmpty()) {
             keywordParam = "&keyword=" + keywordTrimmed;
@@ -255,7 +255,7 @@
     <%
         }
 
-        // Các số trang
+       
         for (int i = 1; i <= totalPages; i++) {
             if (i == currentPage) {
     %>
@@ -268,7 +268,7 @@
             }
         }
 
-        // Next
+    
         if (currentPage < totalPages) {
     %>
     <a href="list_students.jsp?page=<%= currentPage + 1 %><%= keywordParam %>">Next</a>
