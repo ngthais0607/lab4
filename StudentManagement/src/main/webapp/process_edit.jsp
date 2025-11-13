@@ -1,17 +1,49 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%
-  String idParam = request.getParameter("id");
-  String fullName = request.getParameter("full_name");
-  String email = request.getParameter("email");
-  String major = request.getParameter("major");
+  request.setCharacterEncoding("UTF-8");
 
-  if (idParam == null || fullName == null || fullName.trim().isEmpty()) {
-    response.sendRedirect("list_students.jsp?error=Invalid data");
+  String idParam  = request.getParameter("id");
+  String fullName = request.getParameter("full_name");
+  String email    = request.getParameter("email");
+  String major    = request.getParameter("major");
+
+
+  if (idParam == null || idParam.trim().isEmpty()) {
+    response.sendRedirect("list_students.jsp?error=Missing student ID");
     return;
   }
 
-  int studentId = Integer.parseInt(idParam);
+  int studentId;
+  try {
+    studentId = Integer.parseInt(idParam.trim());
+  } catch (NumberFormatException ex) {
+    response.sendRedirect("list_students.jsp?error=Invalid student ID");
+    return;
+  }
+
+  if (fullName == null) fullName = "";
+  if (email == null)    email    = "";
+  if (major == null)    major    = "";
+
+  fullName = fullName.trim();
+  email    = email.trim();
+  major    = major.trim();
+
+
+  if (fullName.isEmpty()) {
+    response.sendRedirect("edit_student.jsp?id=" + studentId + "&error=Full name is required");
+    return;
+  }
+
+
+  if (!email.isEmpty()) {
+    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    if (!email.matches(emailRegex)) {
+      response.sendRedirect("edit_student.jsp?id=" + studentId + "&error=Invalid email format");
+      return;
+    }
+  }
 
   Connection conn = null;
   PreparedStatement pstmt = null;
@@ -27,8 +59,8 @@
     String sql = "UPDATE students SET full_name = ?, email = ?, major = ? WHERE id = ?";
     pstmt = conn.prepareStatement(sql);
     pstmt.setString(1, fullName);
-    pstmt.setString(2, email);
-    pstmt.setString(3, major);
+    pstmt.setString(2, email.isEmpty() ? null : email);
+    pstmt.setString(3, major.isEmpty() ? null : major);
     pstmt.setInt(4, studentId);
 
     int rowsAffected = pstmt.executeUpdate();
@@ -40,8 +72,8 @@
     }
 
   } catch (Exception e) {
-    response.sendRedirect("edit_student.jsp?id=" + studentId + "&error=Error occurred");
     e.printStackTrace();
+    response.sendRedirect("edit_student.jsp?id=" + studentId + "&error=Error occurred");
   } finally {
     try {
       if (pstmt != null) pstmt.close();
